@@ -8,7 +8,7 @@ set -e  # Exit on error
 
 # Configuration
 ENVIRONMENT=${1:-prod}
-LOCATION="eastus2"
+LOCATION="eastus"
 RESOURCE_GROUP_NAME="rg-padlock-challenge"
 DEPLOYMENT_NAME="padlock-challenge-${ENVIRONMENT}-$(date +%s)"
 BICEP_FILE="./infra/main.bicep"
@@ -78,8 +78,7 @@ echo "Validating Bicep template..."
 az deployment group validate \
     --resource-group "$RESOURCE_GROUP_NAME" \
     --template-file "$BICEP_FILE" \
-    --parameters @"$PARAMETERS_FILE" \
-    --parameters environment=$ENVIRONMENT > /dev/null
+    --parameters @"$PARAMETERS_FILE" > /dev/null
 echo "✓ Template validation successful"
 echo ""
 
@@ -92,8 +91,7 @@ DEPLOYMENT_OUTPUT=$(az deployment group create \
     --name "$DEPLOYMENT_NAME" \
     --resource-group "$RESOURCE_GROUP_NAME" \
     --template-file "$BICEP_FILE" \
-    --parameters @"$PARAMETERS_FILE" \
-    --parameters environment=$ENVIRONMENT)
+    --parameters @"$PARAMETERS_FILE")
 
 if [ $? -eq 0 ]; then
     echo "✓ Deployment successful!"
