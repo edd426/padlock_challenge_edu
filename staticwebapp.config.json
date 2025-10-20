@@ -6,52 +6,9 @@
       "allowUnauthenticated": true
     },
     {
-      "route": "/_next/static/*",
-      "methods": ["GET"],
-      "allowUnauthenticated": true,
-      "headers": {
-        "cache-control": "public, max-age=31536000, immutable"
-      }
-    },
-    {
-      "route": "/*.css",
-      "methods": ["GET"],
-      "allowUnauthenticated": true,
-      "headers": {
-        "content-type": "text/css",
-        "cache-control": "public, max-age=31536000"
-      }
-    },
-    {
-      "route": "/*.js",
-      "methods": ["GET"],
-      "allowUnauthenticated": true,
-      "headers": {
-        "content-type": "application/javascript",
-        "cache-control": "public, max-age=31536000"
-      }
-    },
-    {
       "route": "/*",
       "methods": ["GET"],
-      "allowUnauthenticated": true,
-      "rewrite": "/index.html"
-    }
-  ],
-  "mimeTypes": {
-    ".css": "text/css",
-    ".js": "application/javascript",
-    ".json": "application/json",
-    ".html": "text/html"
-  },
-  "staticContent": [
-    {
-      "path": "/styles/*",
-      "maxAge": 31536000
-    },
-    {
-      "path": "/_next/static/*",
-      "maxAge": 31536000
+      "allowUnauthenticated": true
     }
   ]
 }
