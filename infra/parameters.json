@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "eastus2"
+    },
+    "environment": {
+      "value": "prod"
+    },
+    "resourceGroupName": {
+      "value": "rg-padlock-challenge"
+    },
+    "storageAccountName": {
+      "value": "stpadlockchallenge"
+    },
+    "staticWebAppName": {
+      "value": "app-padlock-challenge"
+    },
+    "githubRepo": {
+      "value": "edd426/padlock_challenge_edu"
+    },
+    "githubBranch": {
+      "value": "main"
+    }
+  }
+}
