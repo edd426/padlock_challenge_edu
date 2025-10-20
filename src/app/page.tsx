@@ -29,9 +29,11 @@ export default function MathPadlockGame() {
         setLoading(true);
         const response = await fetch('/api/challenge');
         if (response.ok) {
-          const data: Challenge = await response.json();
-          if (data.locks && data.locks.length > 0) {
-            setLocks(data.locks);
+          const apiResponse = await response.json();
+          // API returns { success: true, data: Challenge }
+          const challenge: Challenge = apiResponse.data;
+          if (challenge && challenge.locks && challenge.locks.length > 0) {
+            setLocks(challenge.locks);
           }
         }
       } catch (err) {
