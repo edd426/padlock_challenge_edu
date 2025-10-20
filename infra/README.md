@@ -76,11 +76,11 @@ Edit `parameters.json` to customize:
 {
   "location": "eastus2",
   "environment": "prod",
-  "resourceGroupName": "rg-padlock-challenge",
-  "storageAccountName": "stpadlockchallenge",
-  "staticWebAppName": "app-padlock-challenge"
+  "storageAccountName": "stpadlockchallenge"
 }
 ```
+
+**Note**: Resource group is created by the `deploy-infra.sh` script before Bicep deployment.
 
 ## Usage Examples
 
