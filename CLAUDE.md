@@ -4,10 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an educational math padlock challenge game for classroom use. The project is currently a single React component (`math-padlock-game.tsx`) and is planned to be migrated to a Next.js application with Azure cloud backend to enable teacher-controlled remote configuration.
+This is an educational math padlock challenge game for classroom use. The project has been migrated from a single React component to a full-stack Next.js application with Azure cloud backend.
 
-**Current State**: Standalone React component
-**Target State**: Next.js app with Azure App Service + Azure Table Storage backend
+**Current State**: Deployed to Azure Static Web Apps
+**Live URL**: https://gentle-field-08c20650f.3.azurestaticapps.net
+
+**⚠️ Known Issues** (See [GitHub Issues](https://github.com/edd426/padlock_challenge_edu/issues)):
+1. [#2] Password Modal Not Working - Cannot access Setup mode
+2. [#3] Missing Styles - No CSS styling in production
+3. [#1] Missing IaC - Infrastructure created manually instead of via code
 
 ## Project Architecture (Planned)
 

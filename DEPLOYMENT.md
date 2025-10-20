@@ -7,6 +7,17 @@ This guide walks through deploying the Math Padlock Challenge to Azure using **A
 **Deployment Model**: Azure Static Web Apps + Table Storage (Updated from original App Service plan)
 **Reason**: Provides free hosting tier (sufficient for classroom use), better Next.js support, no VM quota restrictions
 **Cost**: ~$0.50-1.50/month (vs ~$13/month with App Service)
+**Live URL**: https://gentle-field-08c20650f.3.azurestaticapps.net
+
+## Known Issues
+
+**⚠️ IMPORTANT**: There are currently 3 known issues blocking full functionality:
+
+1. **[#2] Password Modal Not Working** - Cannot access Setup mode to test cloud sync
+2. **[#3] Missing Styles** - App has no CSS styling in production
+3. **[#1] Missing IaC** - Infrastructure must be created manually (see Plan: Infrastructure as Code)
+
+See [GitHub Issues](https://github.com/edd426/padlock_challenge_edu/issues) for detailed information and workarounds.
 
 ## Prerequisites
 

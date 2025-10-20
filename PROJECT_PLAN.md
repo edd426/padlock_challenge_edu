@@ -708,6 +708,12 @@ Requirements:
 ## Document Version History
 - v1.0 (2025-10-20): Initial project plan created based on requirements gathering
 - v1.1 (2025-10-20): Added GitHub Actions CI/CD as primary deployment method with detailed workflow configuration
+- v1.2 (2025-10-20): Post-deployment update
+  - Added actual deployed URL and costs
+  - Documented pivot to Static Web Apps from App Service
+  - Added Known Issues section
+  - Logged 3 GitHub Issues for tracking
+  - Planned Infrastructure as Code (IaC) with Bicep templates
 
 ---
 

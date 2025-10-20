@@ -2,6 +2,10 @@
 
 An interactive educational web app where students solve math problems to unlock virtual padlocks. Teachers can remotely configure challenges, and students access the app via their Chromebooks.
 
+**🚀 Live Demo**: https://gentle-field-08c20650f.3.azurestaticapps.net
+
+**⚠️ Status**: Currently in development with 3 known issues (see [Known Issues](#known-issues) below)
+
 ## Features
 
 - **Interactive Padlock UI**: Realistic SVG padlocks with smooth animations
@@ -10,6 +14,14 @@ An interactive educational web app where students solve math problems to unlock 
 - **Real-Time Rendering**: Shows masked input (asterisks) while students solve
 - **Celebration Reward**: Animated capybara when all locks are unlocked
 - **Responsive Design**: Works perfectly on Chromebooks and tablets
+
+## Known Issues
+
+⚠️ **BLOCKING ISSUES** (See [GitHub Issues](https://github.com/edd426/padlock_challenge_edu/issues)):
+
+1. **[#2] Password Modal Not Working** - Cannot access Setup mode to test cloud sync
+2. **[#3] Missing Styles** - App has no CSS styling in production
+3. **[#1] Missing IaC** - Infrastructure created manually (see Plan: Infrastructure as Code)
 
 ## Getting Started
 
