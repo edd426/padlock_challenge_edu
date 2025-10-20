@@ -14,12 +14,12 @@ const defaultLocks: Lock[] = [
 
 export default function MathPadlockGame() {
   const [mode, setMode] = useState<'play' | 'setup'>('play');
-  const [locks, setLocks] = useState<Lock[]>(defaultLocks);
+  const [locks, setLocks] = useState<Lock[]>([]);
   const [attempts, setAttempts] = useState<Record<number, string>>({});
   const [wrongAttempts, setWrongAttempts] = useState<Record<number, boolean>>({});
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Load challenge from API on mount
@@ -34,10 +34,19 @@ export default function MathPadlockGame() {
           const challenge: Challenge = apiResponse.data;
           if (challenge && challenge.locks && challenge.locks.length > 0) {
             setLocks(challenge.locks);
+          } else {
+            // No challenge data, use defaults
+            setLocks(defaultLocks);
           }
+        } else {
+          // API error, use defaults
+          setLocks(defaultLocks);
+          setError('Failed to load challenge from cloud. Using defaults.');
         }
       } catch (err) {
         console.error('Error loading challenge:', err);
+        // Fallback to defaults if API call fails
+        setLocks(defaultLocks);
         setError('Failed to load challenge. Using defaults.');
       } finally {
         setLoading(false);
@@ -275,6 +284,7 @@ export default function MathPadlockGame() {
                 <button
                   onClick={resetGame}
                   className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg font-semibold transition"
+                  disabled={loading || locks.length === 0}
                 >
                   Reset
                 </button>
@@ -293,6 +303,18 @@ export default function MathPadlockGame() {
                 Loading challenge...
               </div>
             )}
+
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                {error}
+              </div>
+            )}
+
+            {loading && locks.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <div className="text-xl text-gray-600 font-semibold">Loading your challenge...</div>
+              </div>
+            ) : (
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {locks.map((lock) => (
@@ -349,48 +371,49 @@ export default function MathPadlockGame() {
               ))}
             </div>
 
-            {locks.every(lock => lock.unlocked) && locks.length > 0 && (
-              <div className="mt-6 bg-gradient-to-r from-green-100 to-blue-100 border-2 border-green-400 rounded-lg p-8 text-center animate-slideIn">
-                <div className="flex flex-col items-center">
-                  <div className="animate-bounce mb-4">
-                    <svg width="120" height="120" viewBox="0 0 120 120" className="drop-shadow-lg">
-                      {/* Body */}
-                      <ellipse cx="60" cy="70" rx="35" ry="30" fill="#8B6F47" />
+              {locks.every(lock => lock.unlocked) && locks.length > 0 && (
+                <div className="mt-6 bg-gradient-to-r from-green-100 to-blue-100 border-2 border-green-400 rounded-lg p-8 text-center animate-slideIn">
+                  <div className="flex flex-col items-center">
+                    <div className="animate-bounce mb-4">
+                      <svg width="120" height="120" viewBox="0 0 120 120" className="drop-shadow-lg">
+                        {/* Body */}
+                        <ellipse cx="60" cy="70" rx="35" ry="30" fill="#8B6F47" />
 
-                      {/* Head */}
-                      <ellipse cx="60" cy="40" rx="28" ry="25" fill="#A0826D" />
+                        {/* Head */}
+                        <ellipse cx="60" cy="40" rx="28" ry="25" fill="#A0826D" />
 
-                      {/* Ears */}
-                      <ellipse cx="45" cy="25" rx="8" ry="12" fill="#8B6F47" />
-                      <ellipse cx="75" cy="25" rx="8" ry="12" fill="#8B6F47" />
+                        {/* Ears */}
+                        <ellipse cx="45" cy="25" rx="8" ry="12" fill="#8B6F47" />
+                        <ellipse cx="75" cy="25" rx="8" ry="12" fill="#8B6F47" />
 
-                      {/* Eyes */}
-                      <circle cx="50" cy="38" r="4" fill="#000" />
-                      <circle cx="70" cy="38" r="4" fill="#000" />
-                      <circle cx="51" cy="37" r="2" fill="#fff" />
-                      <circle cx="71" cy="37" r="2" fill="#fff" />
+                        {/* Eyes */}
+                        <circle cx="50" cy="38" r="4" fill="#000" />
+                        <circle cx="70" cy="38" r="4" fill="#000" />
+                        <circle cx="51" cy="37" r="2" fill="#fff" />
+                        <circle cx="71" cy="37" r="2" fill="#fff" />
 
-                      {/* Nose */}
-                      <ellipse cx="60" cy="48" rx="6" ry="4" fill="#654321" />
+                        {/* Nose */}
+                        <ellipse cx="60" cy="48" rx="6" ry="4" fill="#654321" />
 
-                      {/* Mouth */}
-                      <path d="M 54 50 Q 60 54 66 50" stroke="#654321" strokeWidth="2" fill="none" />
+                        {/* Mouth */}
+                        <path d="M 54 50 Q 60 54 66 50" stroke="#654321" strokeWidth="2" fill="none" />
 
-                      {/* Legs */}
-                      <rect x="40" y="90" width="12" height="18" rx="6" fill="#8B6F47" />
-                      <rect x="68" y="90" width="12" height="18" rx="6" fill="#8B6F47" />
+                        {/* Legs */}
+                        <rect x="40" y="90" width="12" height="18" rx="6" fill="#8B6F47" />
+                        <rect x="68" y="90" width="12" height="18" rx="6" fill="#8B6F47" />
 
-                      {/* Arms */}
-                      <ellipse cx="35" cy="75" rx="8" ry="15" fill="#8B6F47" transform="rotate(-20 35 75)" />
-                      <ellipse cx="85" cy="75" rx="8" ry="15" fill="#8B6F47" transform="rotate(20 85 75)" />
-                    </svg>
+                        {/* Arms */}
+                        <ellipse cx="35" cy="75" rx="8" ry="15" fill="#8B6F47" transform="rotate(-20 35 75)" />
+                        <ellipse cx="85" cy="75" rx="8" ry="15" fill="#8B6F47" transform="rotate(20 85 75)" />
+                      </svg>
+                    </div>
+
+                    <h2 className="text-4xl font-bold text-green-700 mb-2">🎉 Congratulations! 🎉</h2>
+                    <p className="text-2xl text-green-600 font-semibold mb-2">All Locks Unlocked!</p>
+                    <p className="text-lg text-gray-600">The capybara is proud of you!</p>
                   </div>
-
-                  <h2 className="text-4xl font-bold text-green-700 mb-2">🎉 Congratulations! 🎉</h2>
-                  <p className="text-2xl text-green-600 font-semibold mb-2">All Locks Unlocked!</p>
-                  <p className="text-lg text-gray-600">The capybara is proud of you!</p>
                 </div>
-              </div>
+              )}
             )}
           </div>
         </div>
