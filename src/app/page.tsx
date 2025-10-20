@@ -315,105 +315,106 @@ export default function MathPadlockGame() {
                 <div className="text-xl text-gray-600 font-semibold">Loading your challenge...</div>
               </div>
             ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {locks.map((lock) => (
+                    <div
+                      key={lock.id}
+                      className={`border-2 rounded-lg p-6 transition-all duration-300 ${
+                        lock.unlocked
+                          ? 'bg-green-50 border-green-400'
+                          : wrongAttempts[lock.id]
+                            ? 'bg-red-50 border-red-400 animate-shake'
+                            : 'bg-white border-gray-300'
+                      }`}
+                    >
+                      <div className="flex flex-col items-center">
+                        <Padlock unlocked={lock.unlocked} />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {locks.map((lock) => (
-                <div
-                  key={lock.id}
-                  className={`border-2 rounded-lg p-6 transition-all duration-300 ${
-                    lock.unlocked
-                      ? 'bg-green-50 border-green-400'
-                      : wrongAttempts[lock.id]
-                        ? 'bg-red-50 border-red-400 animate-shake'
-                        : 'bg-white border-gray-300'
-                  }`}
-                >
-                  <div className="flex flex-col items-center">
-                    <Padlock unlocked={lock.unlocked} />
+                        <h3 className="text-xl font-bold text-gray-800 mb-2">{lock.name}</h3>
 
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">{lock.name}</h3>
-
-                    {lock.unlocked ? (
-                      <div className="text-center">
-                        <p className="text-green-600 font-semibold text-lg">Unlocked!</p>
-                      </div>
-                    ) : (
-                      <div className="w-full">
-                        <p className="text-gray-700 mb-4 text-center">{lock.question}</p>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            value={attempts[lock.id] || ''}
-                            onChange={(e) => {
-                              const value = e.target.value.replace(/\D/g, '').slice(0, lock.digits);
-                              setAttempts({ ...attempts, [lock.id]: value });
-                            }}
-                            maxLength={lock.digits}
-                            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-center font-mono text-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent opacity-0 absolute top-0 left-0"
-                          />
-                          <div className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-center font-mono text-2xl pointer-events-none text-gray-600">
-                            {attempts[lock.id] && attempts[lock.id].length > 0
-                              ? '*'.repeat(attempts[lock.id].length) + 'X'.repeat(lock.digits - attempts[lock.id].length)
-                              : 'X'.repeat(lock.digits)}
+                        {lock.unlocked ? (
+                          <div className="text-center">
+                            <p className="text-green-600 font-semibold text-lg">Unlocked!</p>
                           </div>
-                        </div>
-                        <button
-                          onClick={() => tryUnlock(lock.id, attempts[lock.id] || '')}
-                          disabled={!attempts[lock.id] || attempts[lock.id].length !== lock.digits}
-                          className="w-full mt-3 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-semibold transition"
-                        >
-                          Try Code
-                        </button>
+                        ) : (
+                          <div className="w-full">
+                            <p className="text-gray-700 mb-4 text-center">{lock.question}</p>
+                            <div className="relative">
+                              <input
+                                type="text"
+                                value={attempts[lock.id] || ''}
+                                onChange={(e) => {
+                                  const value = e.target.value.replace(/\D/g, '').slice(0, lock.digits);
+                                  setAttempts({ ...attempts, [lock.id]: value });
+                                }}
+                                maxLength={lock.digits}
+                                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-center font-mono text-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent opacity-0 absolute top-0 left-0"
+                              />
+                              <div className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-center font-mono text-2xl pointer-events-none text-gray-600">
+                                {attempts[lock.id] && attempts[lock.id].length > 0
+                                  ? '*'.repeat(attempts[lock.id].length) + 'X'.repeat(lock.digits - attempts[lock.id].length)
+                                  : 'X'.repeat(lock.digits)}
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => tryUnlock(lock.id, attempts[lock.id] || '')}
+                              disabled={!attempts[lock.id] || attempts[lock.id].length !== lock.digits}
+                              className="w-full mt-3 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-semibold transition"
+                            >
+                              Try Code
+                            </button>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-              {locks.every(lock => lock.unlocked) && locks.length > 0 && (
-                <div className="mt-6 bg-gradient-to-r from-green-100 to-blue-100 border-2 border-green-400 rounded-lg p-8 text-center animate-slideIn">
-                  <div className="flex flex-col items-center">
-                    <div className="animate-bounce mb-4">
-                      <svg width="120" height="120" viewBox="0 0 120 120" className="drop-shadow-lg">
-                        {/* Body */}
-                        <ellipse cx="60" cy="70" rx="35" ry="30" fill="#8B6F47" />
-
-                        {/* Head */}
-                        <ellipse cx="60" cy="40" rx="28" ry="25" fill="#A0826D" />
-
-                        {/* Ears */}
-                        <ellipse cx="45" cy="25" rx="8" ry="12" fill="#8B6F47" />
-                        <ellipse cx="75" cy="25" rx="8" ry="12" fill="#8B6F47" />
-
-                        {/* Eyes */}
-                        <circle cx="50" cy="38" r="4" fill="#000" />
-                        <circle cx="70" cy="38" r="4" fill="#000" />
-                        <circle cx="51" cy="37" r="2" fill="#fff" />
-                        <circle cx="71" cy="37" r="2" fill="#fff" />
-
-                        {/* Nose */}
-                        <ellipse cx="60" cy="48" rx="6" ry="4" fill="#654321" />
-
-                        {/* Mouth */}
-                        <path d="M 54 50 Q 60 54 66 50" stroke="#654321" strokeWidth="2" fill="none" />
-
-                        {/* Legs */}
-                        <rect x="40" y="90" width="12" height="18" rx="6" fill="#8B6F47" />
-                        <rect x="68" y="90" width="12" height="18" rx="6" fill="#8B6F47" />
-
-                        {/* Arms */}
-                        <ellipse cx="35" cy="75" rx="8" ry="15" fill="#8B6F47" transform="rotate(-20 35 75)" />
-                        <ellipse cx="85" cy="75" rx="8" ry="15" fill="#8B6F47" transform="rotate(20 85 75)" />
-                      </svg>
                     </div>
-
-                    <h2 className="text-4xl font-bold text-green-700 mb-2">🎉 Congratulations! 🎉</h2>
-                    <p className="text-2xl text-green-600 font-semibold mb-2">All Locks Unlocked!</p>
-                    <p className="text-lg text-gray-600">The capybara is proud of you!</p>
-                  </div>
+                  ))}
                 </div>
-              )}
+
+                {locks.every(lock => lock.unlocked) && locks.length > 0 && (
+                  <div className="mt-6 bg-gradient-to-r from-green-100 to-blue-100 border-2 border-green-400 rounded-lg p-8 text-center animate-slideIn">
+                    <div className="flex flex-col items-center">
+                      <div className="animate-bounce mb-4">
+                        <svg width="120" height="120" viewBox="0 0 120 120" className="drop-shadow-lg">
+                          {/* Body */}
+                          <ellipse cx="60" cy="70" rx="35" ry="30" fill="#8B6F47" />
+
+                          {/* Head */}
+                          <ellipse cx="60" cy="40" rx="28" ry="25" fill="#A0826D" />
+
+                          {/* Ears */}
+                          <ellipse cx="45" cy="25" rx="8" ry="12" fill="#8B6F47" />
+                          <ellipse cx="75" cy="25" rx="8" ry="12" fill="#8B6F47" />
+
+                          {/* Eyes */}
+                          <circle cx="50" cy="38" r="4" fill="#000" />
+                          <circle cx="70" cy="38" r="4" fill="#000" />
+                          <circle cx="51" cy="37" r="2" fill="#fff" />
+                          <circle cx="71" cy="37" r="2" fill="#fff" />
+
+                          {/* Nose */}
+                          <ellipse cx="60" cy="48" rx="6" ry="4" fill="#654321" />
+
+                          {/* Mouth */}
+                          <path d="M 54 50 Q 60 54 66 50" stroke="#654321" strokeWidth="2" fill="none" />
+
+                          {/* Legs */}
+                          <rect x="40" y="90" width="12" height="18" rx="6" fill="#8B6F47" />
+                          <rect x="68" y="90" width="12" height="18" rx="6" fill="#8B6F47" />
+
+                          {/* Arms */}
+                          <ellipse cx="35" cy="75" rx="8" ry="15" fill="#8B6F47" transform="rotate(-20 35 75)" />
+                          <ellipse cx="85" cy="75" rx="8" ry="15" fill="#8B6F47" transform="rotate(20 85 75)" />
+                        </svg>
+                      </div>
+
+                      <h2 className="text-4xl font-bold text-green-700 mb-2">🎉 Congratulations! 🎉</h2>
+                      <p className="text-2xl text-green-600 font-semibold mb-2">All Locks Unlocked!</p>
+                      <p className="text-lg text-gray-600">The capybara is proud of you!</p>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
