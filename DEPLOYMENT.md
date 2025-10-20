@@ -11,13 +11,14 @@ This guide walks through deploying the Math Padlock Challenge to Azure using **A
 
 ## Known Issues
 
-**⚠️ IMPORTANT**: There are currently 3 known issues blocking full functionality:
+**⚠️ IMPORTANT**: There are currently 2 known issues blocking full functionality:
 
 1. **[#2] Password Modal Not Working** - Cannot access Setup mode to test cloud sync
 2. **[#3] Missing Styles** - App has no CSS styling in production
-3. **[#1] Missing IaC** - Infrastructure must be created manually (see Plan: Infrastructure as Code)
 
 See [GitHub Issues](https://github.com/edd426/padlock_challenge_edu/issues) for detailed information and workarounds.
+
+**✅ RESOLVED**: Infrastructure as Code implemented! See "Step 2: Deploy Infrastructure" below.
 
 ## Prerequisites
 
@@ -41,42 +42,34 @@ Verify you're logged in:
 az account show
 ```
 
-## Step 2: Create Azure Resources
+## Step 2: Deploy Infrastructure Using IaC
 
-Run the following commands to create all necessary Azure resources:
+The easiest way to deploy infrastructure is using the automated Bicep Infrastructure as Code templates:
 
-### Create Resource Group
 ```bash
-az group create \
-  --name rg-padlock-challenge \
-  --location eastus
+# Deploy all Azure resources (Resource Group + Storage Account + Table Storage)
+./scripts/deploy-infra.sh
 ```
 
-### Create Storage Account
-```bash
-az storage account create \
-  --name stpadlockchallenge \
-  --resource-group rg-padlock-challenge \
-  --location eastus \
-  --sku Standard_LRS
-```
+This script will:
+- ✅ Check Azure authentication
+- ✅ Create resource group (`rg-padlock-challenge`)
+- ✅ Validate Bicep template
+- ✅ Deploy Storage Account and Table Storage
+- ✅ Extract and save connection string to `.env.azure`
 
-### Create Storage Table
-```bash
-az storage table create \
-  --name challenges \
-  --account-name stpadlockchallenge
-```
+**Output**: Connection string automatically saved to `.env.azure`
 
-### Get Storage Connection String (Save this for Step 4!)
-```bash
-az storage account show-connection-string \
-  --name stpadlockchallenge \
-  --resource-group rg-padlock-challenge \
-  --output tsv
-```
+### (Optional) Manual Resource Creation
 
-**IMPORTANT**: Copy the entire output connection string - you'll need it in Step 4b.
+If you prefer manual CLI commands instead of IaC, see [infra/README.md](infra/README.md) for step-by-step instructions.
+
+### Get Storage Connection String
+
+After deployment, view the connection string:
+```bash
+cat .env.azure
+```
 
 ## Step 3: Create Static Web App via Azure Portal
 
@@ -123,7 +116,7 @@ Once the Static Web App is created, you need to add the Azure Storage connection
 4. Click "+ Add"
 5. Add environment variables:
    - **Name**: `AZURE_STORAGE_CONNECTION_STRING`
-   - **Value**: Paste the connection string from Step 2 (the full string output)
+   - **Value**: Paste the connection string from `.env.azure` (from Step 2 deployment)
    - Click "OK"
 6. Click "Save" to confirm
 
