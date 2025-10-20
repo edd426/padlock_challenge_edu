@@ -8,20 +8,8 @@
     "environment": {
       "value": "prod"
     },
-    "resourceGroupName": {
-      "value": "rg-padlock-challenge"
-    },
     "storageAccountName": {
       "value": "stpadlockchallenge"
-    },
-    "staticWebAppName": {
-      "value": "app-padlock-challenge"
-    },
-    "githubRepo": {
-      "value": "edd426/padlock_challenge_edu"
-    },
-    "githubBranch": {
-      "value": "main"
     }
   }
 }
