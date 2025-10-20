@@ -10,10 +10,23 @@ Convert the existing single-component Math Padlock Challenge into a cloud-enable
 - **Update Mechanism**: Manual refresh - students refresh browser to see latest challenges
 - **User Model**: Anonymous access - no student tracking or authentication
 - **Data Model**: Single active challenge (overwrite on teacher update)
-- **Budget Target**: ~$5-10/month (minimal Azure setup)
-- **Hosting**: Azure App Service (all-in-one fullstack hosting)
+- **Budget Target**: ~$13-15/month (minimal Azure setup)
+- **Hosting**: Azure Static Web Apps + Azure Functions (serverless, no quota restrictions)
 - **Database**: Azure Table Storage (cheapest option, sufficient for simple CRUD)
 - **Framework**: Next.js (React framework with built-in API routes)
+- **CI/CD**: GitHub Actions with Static Web Apps deployment
+
+### Architecture Decision: Static Web Apps vs App Service
+
+**Initial Plan**: Azure App Service
+**Final Decision**: Azure Static Web Apps + Azure Functions
+**Reason for Change**: Free trial quota restrictions on App Service prevented deployment. Static Web Apps offers:
+- ✅ No VM quota restrictions (instant approval)
+- ✅ Better Next.js integration (built-in support)
+- ✅ Same cost (~$13-15/month)
+- ✅ Simpler GitHub integration
+- ✅ CDN included automatically
+- ⚠️ API cold starts (2-5 sec on first call after idle) - acceptable for classroom usage patterns
 
 ---
 
@@ -27,27 +40,28 @@ Convert the existing single-component Math Padlock Challenge into a cloud-enable
 │  - Manual refresh to get latest challenges              │
 └────────────────┬────────────────────────────────────────┘
                  │
-                 │ HTTPS
+                 │ HTTPS + CDN (CloudFlare)
                  │
 ┌────────────────▼────────────────────────────────────────┐
-│              Azure App Service (Next.js)                │
+│        Azure Static Web Apps (Next.js Frontend)         │
 │                                                          │
 │  ┌─────────────────────────────────────────────┐       │
-│  │         Frontend (React/Next.js)            │       │
+│  │      Frontend (React/Next.js SPA)           │       │
 │  │  - Challenge view (default)                 │       │
 │  │  - Setup view (password protected)          │       │
-│  └─────────────────────────────────────────────┘       │
-│                                                          │
-│  ┌─────────────────────────────────────────────┐       │
-│  │         Backend (Next.js API Routes)        │       │
+│  │  - Optimized for static hosting             │       │
+│  └─────────┬───────────────────────────────────┘       │
+│            │                                            │
+│  ┌─────────▼───────────────────────────────────┐       │
+│  │      API Route Handler (Next.js Routes)     │       │
 │  │  - GET  /api/challenge (get active)         │       │
 │  │  - POST /api/challenge (update - auth req'd)│       │
-│  └─────────────────┬───────────────────────────┘       │
-└────────────────────┼────────────────────────────────────┘
-                     │
-                     │ Azure SDK
-                     │
-┌────────────────────▼────────────────────────────────────┐
+│  └─────────┬───────────────────────────────────┘       │
+└────────────┼────────────────────────────────────────────┘
+             │
+             │ Azure SDK (Table Storage)
+             │
+┌────────────▼────────────────────────────────────────────┐
 │              Azure Table Storage                        │
 │                                                          │
 │  Table: "challenges"                                    │
@@ -75,11 +89,16 @@ Convert the existing single-component Math Padlock Challenge into a cloud-enable
 
 ## Azure Services & Estimated Costs
 
-### Azure App Service
-- **Tier**: Basic B1 (smallest production tier)
-- **Specs**: 1 core, 1.75 GB RAM
-- **Cost**: ~$13/month (paid monthly)
-- **Alternative**: Free tier F1 (limited hours, for testing only)
+### Azure Static Web Apps
+- **Hosting Model**: Serverless static site hosting with integrated API
+- **Free Tier Features**: Perfect for this use case
+  - 1 static web app
+  - 100 GB monthly bandwidth
+  - 250,000 monthly API requests (more than enough)
+  - CDN included (CloudFlare)
+  - HTTPS automatic
+- **Cost**: **FREE** for this usage level
+- **Production Tier (if needed): $10-50/month depending on traffic
 
 ### Azure Storage Account (Table Storage)
 - **Usage**: Store one active challenge configuration
@@ -89,10 +108,10 @@ Convert the existing single-component Math Padlock Challenge into a cloud-enable
 
 ### Custom Domain (Optional)
 - **Azure DNS**: ~$0.50/month if using custom domain
-- **Use Azure subdomain for free**: `yourapp.azurewebsites.net`
+- **Use Static Web Apps subdomain for free**: `yourapp.azurestaticapps.net`
 
-### **Total Estimated Cost**: ~$13-15/month
-**Note**: For absolute minimal cost (~$5/month), consider Azure Static Web Apps + Azure Functions (more complex setup)
+### **Total Estimated Cost**: ~$0.50-1.50/month!
+**Note**: This is significantly cheaper than the original App Service plan (~$13/month) thanks to the free Static Web Apps tier being sufficient for your usage
 
 ---
 

@@ -1,6 +1,12 @@
-# Deployment Guide - Math Padlock Challenge
+# Deployment Guide - Math Padlock Challenge to Azure Static Web Apps
 
-This guide walks through deploying the Math Padlock Challenge to Azure with GitHub Actions CI/CD.
+This guide walks through deploying the Math Padlock Challenge to Azure using **Azure Static Web Apps** with GitHub Actions CI/CD.
+
+## Architecture Note
+
+**Deployment Model**: Azure Static Web Apps + Table Storage (Updated from original App Service plan)
+**Reason**: Provides free hosting tier (sufficient for classroom use), better Next.js support, no VM quota restrictions
+**Cost**: ~$0.50-1.50/month (vs ~$13/month with App Service)
 
 ## Prerequisites
 
@@ -59,219 +65,203 @@ az storage account show-connection-string \
   --output tsv
 ```
 
-**IMPORTANT**: Copy the output connection string - you'll need it in Step 4.
+**IMPORTANT**: Copy the entire output connection string - you'll need it in Step 4b.
 
-### Create App Service Plan
+## Step 3: Create Static Web App via Azure Portal
+
+The easiest way to create and deploy a Static Web App is through GitHub integration in the Azure Portal.
+
+1. Go to Azure Portal: https://portal.azure.com
+2. Search for "Static Web Apps" in the search bar
+3. Click "+ Create"
+4. Fill in the Basic details:
+   - **Resource Group**: `rg-padlock-challenge`
+   - **Name**: `app-padlock-challenge`
+   - **Plan type**: `Free`
+   - **Region**: `East US`
+5. Click "Sign in with GitHub"
+   - You'll be prompted to authorize Azure
+   - Authorize the connection
+6. Fill in GitHub details:
+   - **Organization**: Select your GitHub account
+   - **Repository**: `padlock_challenge_edu`
+   - **Branch**: `main`
+7. Configure build details:
+   - **Build Presets**: `Next.js`
+   - **App location**: `/`
+   - **API location**: `api`
+   - **Build output location**: `.next`
+8. Click "Review + Create"
+9. Click "Create"
+
+Azure will automatically:
+- Create the Static Web App resource
+- Create a GitHub Actions workflow in your repo
+- Deploy your app on the first push
+
+Wait 5-10 minutes for the initial deployment to complete.
+
+## Step 4: Add Environment Variables
+
+Once the Static Web App is created, you need to add the Azure Storage connection string as an environment variable.
+
+### Via Azure Portal:
+1. Go to Azure Portal: https://portal.azure.com
+2. Navigate to your Static Web App: `app-padlock-challenge`
+3. Click "Configuration" in the left sidebar
+4. Click "+ Add"
+5. Add environment variables:
+   - **Name**: `AZURE_STORAGE_CONNECTION_STRING`
+   - **Value**: Paste the connection string from Step 2 (the full string output)
+   - Click "OK"
+6. Click "Save" to confirm
+
+### Redeploy after adding environment variables:
 ```bash
-az appservice plan create \
-  --name plan-padlock-challenge \
-  --resource-group rg-padlock-challenge \
-  --sku B1 \
-  --is-linux
-```
-
-### Create Web App
-```bash
-az webapp create \
-  --name app-padlock-challenge \
-  --resource-group rg-padlock-challenge \
-  --plan plan-padlock-challenge \
-  --runtime "NODE|18-lts"
-```
-
-### Configure Initial Settings
-```bash
-az webapp config appsettings set \
-  --name app-padlock-challenge \
-  --resource-group rg-padlock-challenge \
-  --settings AZURE_STORAGE_CONNECTION_STRING="<connection_string_from_step_2d>"
-```
-
-Replace `<connection_string_from_step_2d>` with the connection string you saved from Step 2d.
-
-## Step 3: Get Publish Profile
-
-Get the publish profile for GitHub Actions deployment:
-
-```bash
-az webapp deployment list-publishing-profiles \
-  --name app-padlock-challenge \
-  --resource-group rg-padlock-challenge \
-  --xml
-```
-
-This outputs XML content. **Copy the entire output** - you'll need it in Step 4a.
-
-## Step 4: Add GitHub Secrets
-
-GitHub Secrets are used by GitHub Actions to authenticate with Azure. You'll add two secrets:
-
-### Step 4a: Add Azure Publish Profile Secret
-
-1. Go to your GitHub repository: https://github.com/edd426/padlock_challenge_edu
-2. Click **Settings** (top right)
-3. Click **Secrets and variables** → **Actions** (left sidebar)
-4. Click **New repository secret**
-
-**First Secret:**
-- **Name**: `AZURE_WEBAPP_PUBLISH_PROFILE`
-- **Value**: Paste the entire XML output from Step 3
-- Click **Add secret**
-
-### Step 4b: Add Storage Connection String Secret
-
-1. Click **New repository secret** again
-
-**Second Secret:**
-- **Name**: `AZURE_STORAGE_CONNECTION_STRING`
-- **Value**: Paste the connection string from Step 2d
-- Click **Add secret**
-
-## Step 5: Push to GitHub
-
-Commit and push the latest code to GitHub:
-
-```bash
-git add .github/workflows/azure-deploy.yml
-git commit -m "Add GitHub Actions Azure deployment workflow"
+# Make a small change and push to trigger redeployment
+echo "# Updated" >> README.md
+git add README.md
+git commit -m "Trigger redeployment"
 git push origin main
 ```
 
-This will trigger the GitHub Actions workflow automatically!
+## Step 5: Access Your Deployed App
 
-## Step 6: Monitor Deployment
+Once deployment completes (check GitHub Actions for status):
 
-1. Go to your GitHub repository
-2. Click **Actions** tab
-3. You should see "Deploy to Azure App Service" workflow running
-4. Click on the workflow to see real-time logs
-5. Wait for it to complete (usually 2-3 minutes)
-
-If the deployment succeeds, you'll see a green checkmark.
-
-## Step 7: Access Your Deployed App
-
-Once deployed successfully, your app is live at:
-
+Your app is live at:
 ```
-https://app-padlock-challenge.azurewebsites.net
+https://app-padlock-challenge.azurestaticapps.net
 ```
 
 Test the app:
 1. Visit the URL in your browser
-2. Click "Setup" button
-3. Enter password: `swordfish`
-4. Make a small change to a lock question
-5. Click "Save to Cloud"
-6. Go back to challenge mode
-7. Refresh the page
-8. Verify the change appears
+2. You should see the Math Padlock Challenge
+3. Click "Setup" button
+4. Enter password: `swordfish`
+5. Make a small change to test
+6. Click "Save to Cloud"
+7. Go back to challenge mode
+8. Refresh the page
+9. Verify the change appears
 
-## Step 8: Create Student Access Materials
+## Step 6: Monitor Deployment
 
-### Option A: QR Code
+Watch the GitHub Actions workflow:
+
+1. Go to your GitHub repository
+2. Click **Actions** tab
+3. You should see "Azure Static Web Apps CI/CD" workflow
+4. Click on the workflow run to see real-time logs
+5. Wait for it to complete (usually 2-3 minutes)
+
+If deployment succeeds, you'll see a green checkmark.
+
+## Step 7: Create Student Access Materials
+
+### Option A: QR Code (Easiest for Chromebooks)
 1. Visit: https://qr-code-generator.com
-2. Enter URL: `https://app-padlock-challenge.azurewebsites.net`
-3. Generate and download the QR code
-4. Print or display for students to scan
+2. Enter URL: `https://app-padlock-challenge.azurestaticapps.net`
+3. Generate and download QR code
+4. Print or display for students to scan with their Chromebooks
 
 ### Option B: URL Shortener
 1. Visit: https://bit.ly
-2. Enter long URL: `https://app-padlock-challenge.azurewebsites.net`
+2. Enter long URL: `https://app-padlock-challenge.azurestaticapps.net`
 3. Create short link (e.g., `https://bit.ly/padlock-challenge`)
-4. Share the short URL with students
+4. Display the short URL on your board
 
 ### Option C: Google Classroom
-1. Create a new assignment in Google Classroom
+1. Create a new assignment/material in Google Classroom
 2. Add the full URL in the instructions
 3. Students click the link to access
 
-## Troubleshooting
+## Step 8: Ongoing Updates
 
-### Deployment Failed
-Check GitHub Actions logs for errors:
-1. Go to **Actions** tab
-2. Click the failed workflow
-3. Click the **build-and-deploy** job
-4. Scroll through logs to find the error message
-5. Common issues:
-   - Secrets not set correctly → Re-check Step 4
-   - Invalid connection string → Copy from Step 2d again
-   - App settings not configured → Run Step 2e again
+After the initial setup, deployment is fully automated!
 
-### Can't Access the App URL
-- Wait 2-3 minutes after deployment completes
-- Try clearing your browser cache
-- Use a private/incognito window
-- Check that app status is "Running" in Azure Portal
-
-### API Not Working
-- Ensure Azure Table Storage connection string is set
-- Verify table "challenges" exists in storage account
-- Check app logs in Azure Portal → App Service → Logs
-
-## Future Deployments
-
-After the initial setup, every time you:
+Every time you:
 1. Make code changes
 2. Commit to GitHub
 3. Push to `main` branch
 
-The GitHub Actions workflow automatically:
+GitHub Actions automatically:
 - Builds the app
-- Runs tests (if any)
-- Deploys to Azure
-- Configures environment variables
+- Runs tests
+- Deploys to Azure Static Web Apps
+- Updates environment variables
 
-No additional steps needed!
+**No additional steps needed!**
 
-## Manual Deployment (Alternative)
+## Troubleshooting
 
-If you prefer to deploy manually without GitHub Actions:
+### Deployment Failed
+Check GitHub Actions logs:
+1. Go to GitHub repository → Actions tab
+2. Click the failed workflow
+3. Click "build_and_deploy" job
+4. Scroll through logs to find the error
+5. Common issues:
+   - Missing build configuration → Check `.github/workflows/`
+   - Node version mismatch → Check build preset in Static Web App config
+   - Environment variables → Check they're set in Azure Portal
 
-```bash
-# Build the app
-npm run build
+### App Won't Load
+- Wait 5 minutes after deployment completes
+- Try clearing browser cache
+- Check URL is correct: `https://app-padlock-challenge.azurestaticapps.net`
+- Check GitHub Actions shows successful deployment (green checkmark)
 
-# Deploy using Azure CLI
-az webapp deployment source config-zip \
-  --name app-padlock-challenge \
-  --resource-group rg-padlock-challenge \
-  --src <path-to-zip-file>
-```
+### API Not Working
+- Verify environment variables are set in Azure Portal Configuration
+- Check Azure Storage connection string is correct
+- Verify Storage Table "challenges" exists
+- Check Azure Storage account is in same resource group
 
-## Monitoring & Maintenance
+### Can't Save Challenges
+- Verify password is correct ("swordfish")
+- Check network tab in browser developer tools for API errors
+- Ensure AZURE_STORAGE_CONNECTION_STRING environment variable is set
+- Test connection string is valid (should contain AccountName and AccountKey)
 
-### View App Logs
-```bash
-az webapp log tail \
-  --name app-padlock-challenge \
-  --resource-group rg-padlock-challenge
-```
+## Monitoring & Costs
+
+### View App Performance
+Azure Portal → Static Web App → Monitoring
 
 ### Check Resource Costs
-Visit Azure Portal → Resource Groups → rg-padlock-challenge → Cost Analysis
+Azure Portal → Resource Groups → rg-padlock-challenge → Cost Analysis
 
-Estimated monthly cost: **$13-15**
-- App Service B1: ~$13/month
-- Table Storage: ~$0.50-1/month
+**Estimated monthly cost:**
+- Static Web App (free tier): $0
+- Table Storage (minimal usage): ~$0.50-1/month
+- **Total: ~$0.50-1.50/month**
 
-### Scale Up (If Needed)
-If you need more performance:
-```bash
-az appservice plan update \
-  --name plan-padlock-challenge \
-  --resource-group rg-padlock-challenge \
-  --sku S1
-```
+The free tier is perfect for:
+- Up to 100 GB monthly bandwidth
+- Up to 250,000 monthly API requests
+- One static web app per free tier
+- CDN included
 
-(This increases cost to ~$75/month)
+### If You Need More:
+- Upgrade Static Web App to Standard tier (~$10-50/month)
+- Better for production use with higher traffic
+
+## Custom Domain (Optional)
+
+To use a custom domain (e.g., `mathchallenge.com`):
+
+1. Register domain (GoDaddy, Namecheap, etc.) - ~$12/year
+2. In Azure Portal → Static Web App → Custom domains
+3. Add your domain
+4. Update DNS records at your domain registrar
+5. Verify ownership
 
 ## Support
 
-For issues or questions:
+For issues:
 - Check GitHub Issues: https://github.com/edd426/padlock_challenge_edu/issues
-- Review Azure documentation: https://docs.microsoft.com/en-us/azure/app-service/
+- Review Azure documentation: https://docs.microsoft.com/en-us/azure/static-web-apps/
 - Check deployment logs in GitHub Actions
 
 ---
