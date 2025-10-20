@@ -97,8 +97,10 @@ export async function checkAzureConnection(): Promise<boolean> {
     }
 
     const client = getTableClient();
-    // Just try to access the properties
-    await client.getProperties();
+    // Try to list entities to verify connection
+    const iterator = client.listEntities();
+    // Just get the first entity to verify connection works
+    await iterator.next();
     return true;
   } catch (error) {
     console.error('Azure connection check failed:', error);
