@@ -1,5 +1,7 @@
 # Math Padlock Challenge
 
+> ⚠️ **OFFLINE since 2026-10-25.** The deployment described here was taken down for security reasons; see [HANDOFF.md](HANDOFF.md) before redeploying.
+
 An interactive educational web app where students solve math problems to unlock virtual padlocks. Teachers can remotely configure challenges, and students access the app via their Chromebooks.
 
 **🚀 Live Demo**: https://gentle-field-08c20650f.3.azurestaticapps.net

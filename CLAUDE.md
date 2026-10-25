@@ -1,13 +1,14 @@
 # CLAUDE.md
 
+> ⚠️ **This app is OFFLINE and must not be redeployed as-is.** [HANDOFF.md](HANDOFF.md) lists what is required to run it safely.
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
 This is an educational math padlock challenge game for classroom use. The project has been migrated from a single React component to a full-stack Next.js application with Azure cloud backend.
 
-**Current State**: Deployed to Azure Static Web Apps
-**Live URL**: https://gentle-field-08c20650f.3.azurestaticapps.net
+**Current State**: OFFLINE since 2026-10-25 (security takedown). Read [HANDOFF.md](HANDOFF.md) before any deploy.
 
 **⚠️ Known Issues** (See [GitHub Issues](https://github.com/edd426/padlock_challenge_edu/issues)):
 1. [#2] Password Modal Not Working - Cannot access Setup mode

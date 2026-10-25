@@ -1,5 +1,7 @@
 # Deployment Guide - Math Padlock Challenge to Azure Static Web Apps
 
+> ⚠️ **OFFLINE since 2026-10-25.** The deployment described here was taken down for security reasons; see [HANDOFF.md](HANDOFF.md) before redeploying.
+
 This guide walks through deploying the Math Padlock Challenge to Azure using **Azure Static Web Apps** with GitHub Actions CI/CD.
 
 ## Architecture Note
